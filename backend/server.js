@@ -28,8 +28,9 @@ app.use(express.static(path.join(__dirname, '..', 'frontend')));
 const mongoose = require('mongoose');
 
 // ─── MongoDB Setup ────────────────────────────────────────────────────────
-mongoose.connect('mongodb://127.0.0.1:27017/smartdine')
-    .then(() => console.log('[DB] Connected to MongoDB locally (smartdine)'))
+const mongoURI = process.env.MONGODB_URI || 'mongodb://127.0.0.1:27017/smartdine';
+mongoose.connect(mongoURI)
+    .then(() => console.log('[DB] Connected to MongoDB (smartdine)'))
     .catch(err => console.error('[DB] MongoDB connection error:', err));
 
 const userSchema = new mongoose.Schema({
