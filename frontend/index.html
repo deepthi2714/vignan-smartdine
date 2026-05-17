@@ -1,0 +1,571 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vignan SmartDine | Premium Pre-Order System</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Syne:wght@400;700;800&family=DM+Sans:wght@400;500;700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="css/styles.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
+</head>
+
+<body>
+
+    <!-- NOTIFICATIONS -->
+    <div class="notif-stack" id="notifStack"></div>
+
+    <!-- NAVIGATION -->
+    <nav id="mainNav" class="hidden">
+        <div class="nav-inner">
+            <div class="nav-logo" onclick="showPage('home')">🍛 Vignan<span>SmartDine</span></div>
+            <div class="nav-links">
+                <button class="nav-btn active" onclick="showPage('home')">Home</button>
+                <button class="nav-btn" onclick="showPage('menu')">Menu</button>
+                <button class="nav-btn" onclick="showPage('orders')">Orders</button>
+                <button class="nav-btn primary" onclick="toggleCart()">🛒 Cart <span class="badge"
+                        id="cartBadge">0</span></button>
+                <div class="notif-bell-wrap">
+                    <button class="nav-btn" id="notifBellBtn" onclick="toggleNotifPanel()" title="Notifications">
+                        🔔 <span class="badge" id="notifBadge" style="display:none;background:var(--danger);">0</span>
+                    </button>
+                    <div class="notif-panel hidden" id="notifPanel">
+                        <div class="notif-panel-header">
+                            <span style="font-weight:700;font-size:0.9rem;">🔔 Notifications</span>
+                            <button onclick="clearNotifs()"
+                                style="background:none;border:none;color:#a0a0c0;cursor:pointer;font-size:0.75rem;padding:4px 8px;border-radius:6px;">Mark
+                                all read</button>
+                        </div>
+                        <div id="notifPanelBody" style="max-height:380px;overflow-y:auto;"></div>
+                    </div>
+                </div>
+
+                <div class="profile-dropdown-wrap" style="position:relative;">
+                    <div style="display:flex;align-items:center;gap:6px;color:var(--text);font-weight:600;margin-left:8px;padding:8px 12px;background:rgba(255,255,255,0.05);border-radius:8px;cursor:pointer;transition:background 0.2s;"
+                        onmouseover="this.style.background='rgba(255,255,255,0.1)'"
+                        onmouseout="this.style.background='rgba(255,255,255,0.05)'"
+                        onclick="document.getElementById('studentProfileDropdown').classList.toggle('hidden')">
+                        <span style="font-size:1.1rem;color:var(--accent);">👤</span>
+                        <span id="navUserName">User</span>
+                    </div>
+                    <div class="profile-dropdown hidden" id="studentProfileDropdown"
+                        style="position:absolute;top:calc(100% + 10px);right:0;background:#1e1e2d;border:1px solid rgba(255,255,255,0.1);border-radius:12px;width:260px;box-shadow:0 10px 40px rgba(0,0,0,0.5);z-index:100;padding:12px;display:flex;flex-direction:column;gap:4px;">
+                        <div
+                            style="padding:4px 8px 12px 8px;border-bottom:1px solid rgba(255,255,255,0.1);margin-bottom:8px;">
+                            <div id="ddUserName" style="font-weight:700;color:#fff;font-size:1.05rem;">User Name</div>
+                            <div id="ddUserEmail" style="font-size:0.8rem;color:var(--text3);margin-top:2px;">
+                                email@vignan.ac.in</div>
+                            <div id="ddUserYear"
+                                style="font-size:0.75rem;color:var(--text2);margin-top:6px;background:rgba(255,255,255,0.05);display:inline-block;padding:3px 8px;border-radius:6px;border:1px solid rgba(255,255,255,0.05);">
+                                Year</div>
+                        </div>
+                        <button
+                            style="width:100%;text-align:left;background:none;border:none;color:var(--text2);padding:10px 12px;border-radius:8px;cursor:pointer;display:flex;gap:12px;align-items:center;font-size:0.95rem;transition:all 0.2s;"
+                            onmouseover="this.style.background='rgba(255,255,255,0.05)';this.style.color='#fff';"
+                            onmouseout="this.style.background='none';this.style.color='var(--text2)';"
+                            onclick="document.getElementById('studentProfileDropdown').classList.add('hidden');showPage('profile')">
+                            <span style="font-size:1.1rem;">👤</span> My Profile
+                        </button>
+                        <button
+                            style="width:100%;text-align:left;background:none;border:none;color:var(--text2);padding:10px 12px;border-radius:8px;cursor:pointer;display:flex;gap:12px;align-items:center;font-size:0.95rem;transition:all 0.2s;"
+                            onmouseover="this.style.background='rgba(255,255,255,0.05)';this.style.color='#fff';"
+                            onmouseout="this.style.background='none';this.style.color='var(--text2)';"
+                            onclick="document.getElementById('studentProfileDropdown').classList.add('hidden');showPage('orders')">
+                            <span style="font-size:1.1rem;">📋</span> My Orders
+                        </button>
+                        <button
+                            style="width:100%;text-align:left;background:none;border:none;color:var(--danger);padding:10px 12px;border-radius:8px;cursor:pointer;display:flex;gap:12px;align-items:center;margin-top:4px;font-size:0.95rem;transition:all 0.2s;"
+                            onmouseover="this.style.background='rgba(239,68,68,0.1)'"
+                            onmouseout="this.style.background='none'"
+                            onclick="document.getElementById('studentProfileDropdown').classList.add('hidden');logout()">
+                            <span style="font-size:1.1rem;">🚪</span> Logout
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- ADMIN NAV -->
+    <nav id="adminNav" class="hidden" style="background:#1a1a1a;">
+        <div class="nav-inner">
+            <div class="nav-logo" style="color:var(--accent3);">⚙️ Admin<span>Panel</span></div>
+            <div class="nav-links">
+                <button class="nav-btn active" onclick="showPage('admin')">Dashboard</button>
+                <div class="profile-dropdown-wrap" style="position:relative;">
+                    <div style="display:flex;align-items:center;gap:6px;color:var(--text);font-weight:600;margin-left:8px;padding:8px 12px;background:rgba(255,255,255,0.05);border-radius:8px;cursor:pointer;transition:background 0.2s;"
+                        onmouseover="this.style.background='rgba(255,255,255,0.1)'"
+                        onmouseout="this.style.background='rgba(255,255,255,0.05)'"
+                        onclick="document.getElementById('adminProfileDropdown').classList.toggle('hidden')">
+                        <span style="font-size:1.1rem;color:var(--accent3);">👤</span>
+                        <span id="navAdminName">Admin</span>
+                    </div>
+                    <div class="profile-dropdown hidden" id="adminProfileDropdown"
+                        style="position:absolute;top:calc(100% + 10px);right:0;background:#1e1e2d;border:1px solid rgba(255,255,255,0.1);border-radius:12px;width:260px;box-shadow:0 10px 40px rgba(0,0,0,0.5);z-index:100;padding:12px;display:flex;flex-direction:column;gap:4px;">
+                        <div
+                            style="padding:4px 8px 12px 8px;border-bottom:1px solid rgba(255,255,255,0.1);margin-bottom:8px;">
+                            <div id="ddAdminName" style="font-weight:700;color:#fff;font-size:1.05rem;">Administrator
+                            </div>
+                            <div id="ddAdminEmail" style="font-size:0.8rem;color:var(--text3);margin-top:2px;">
+                                admin@vignan.ac.in</div>
+                            <div
+                                style="font-size:0.75rem;color:var(--accent3);margin-top:6px;background:rgba(255,255,255,0.05);display:inline-block;padding:3px 8px;border-radius:6px;border:1px solid rgba(255,255,255,0.05);">
+                                Staff</div>
+                        </div>
+                        <button
+                            style="width:100%;text-align:left;background:none;border:none;color:var(--text2);padding:10px 12px;border-radius:8px;cursor:pointer;display:flex;gap:12px;align-items:center;font-size:0.95rem;transition:all 0.2s;"
+                            onmouseover="this.style.background='rgba(255,255,255,0.05)';this.style.color='#fff';"
+                            onmouseout="this.style.background='none';this.style.color='var(--text2)';"
+                            onclick="document.getElementById('adminProfileDropdown').classList.add('hidden');showPage('admin')">
+                            <span style="font-size:1.1rem;">⚙️</span> Dashboard
+                        </button>
+                        <button
+                            style="width:100%;text-align:left;background:none;border:none;color:var(--danger);padding:10px 12px;border-radius:8px;cursor:pointer;display:flex;gap:12px;align-items:center;margin-top:4px;font-size:0.95rem;transition:all 0.2s;"
+                            onmouseover="this.style.background='rgba(239,68,68,0.1)'"
+                            onmouseout="this.style.background='none'"
+                            onclick="document.getElementById('adminProfileDropdown').classList.add('hidden');logout()">
+                            <span style="font-size:1.1rem;">🚪</span> Logout
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- PAGES -->
+
+    <!-- AUTH PAGE -->
+    <div class="page active" id="page-auth" style="background:var(--bg);">
+        <div class="auth-split">
+            <div class="auth-left"
+                style="background:transparent;position:relative;z-index:2;display:flex;align-items:center;justify-content:center;padding:40px;">
+                <div
+                    style="position:absolute;top:-100px;left:-100px;width:300px;height:300px;background:var(--accent);filter:blur(150px);opacity:0.3;border-radius:50%;">
+                </div>
+                <div
+                    style="position:absolute;bottom:-100px;right:-100px;width:300px;height:300px;background:var(--purple);filter:blur(150px);opacity:0.3;border-radius:50%;">
+                </div>
+
+                <div class="auth-form-container"
+                    style="background:rgba(26,26,38,0.6);backdrop-filter:blur(24px);border:1px solid rgba(255,255,255,0.05);padding:40px;border-radius:24px;box-shadow:0 24px 64px rgba(0,0,0,0.4);width:100%;max-width:440px;">
+                    <div class="auth-logo" style="text-align:center;margin-bottom:30px;">
+                        <div
+                            style="display:inline-flex;align-items:center;justify-content:center;width:64px;height:64px;border-radius:18px;background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;font-size:2rem;margin-bottom:16px;box-shadow:0 8px 24px rgba(255,107,53,0.3);">
+                            ⚡</div>
+                        <h1 style="color:var(--text);font-size:2rem;font-weight:800;letter-spacing:-0.5px;">Smart<span
+                                style="color:var(--accent);">Dine</span></h1>
+                        <p style="color:var(--text2);font-size:0.9rem;margin-top:6px;">Next-Gen Canteen Ordering</p>
+                    </div>
+
+                    <div class="auth-tabs"
+                        style="background:var(--bg2);padding:6px;border-radius:14px;border:1px solid var(--border);">
+                        <div class="auth-tab active" id="tab-login" onclick="switchAuthTab('login')"
+                            style="color:var(--text);font-weight:600;background:var(--bg3);border:1px solid var(--border);">
+                            User Login</div>
+                        <div class="auth-tab" id="tab-register" onclick="switchAuthTab('register')"
+                            style="color:var(--text2);">Register</div>
+                        <div class="auth-tab" id="tab-admin" onclick="switchAuthTab('admin')"
+                            style="color:var(--text2);">Admin</div>
+                    </div>
+
+                    <!-- Login -->
+                    <div id="loginForm">
+                        <div class="form-group">
+                            <label style="color:var(--text2);font-weight:500;">Email / Roll Number</label>
+                            <div style="position:relative;">
+                                <span
+                                    style="position:absolute;left:14px;top:50%;transform:translateY(-50%);opacity:0.6;font-size:1.1rem;">👤</span>
+                                <input type="email" id="loginEmail" placeholder="student@vignan.ac.in"
+                                    style="background:var(--bg2);border:1px solid var(--border);color:var(--text);padding-left:42px;border-radius:12px;">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label style="color:var(--text2);font-weight:500;">Password</label>
+                            <div style="position:relative;">
+                                <span
+                                    style="position:absolute;left:14px;top:50%;transform:translateY(-50%);opacity:0.6;font-size:1.1rem;">🔒</span>
+                                <input type="password" id="loginPass" placeholder="••••••••"
+                                    style="background:var(--bg2);border:1px solid var(--border);color:var(--text);padding-left:42px;border-radius:12px;">
+                            </div>
+                        </div>
+                        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:24px;">
+                            <label
+                                style="display:flex;align-items:center;gap:8px;font-size:0.8rem;color:var(--text3);cursor:pointer;">
+                                <input type="checkbox" style="accent-color:var(--accent);"> Remember me
+                            </label>
+                            <a href="#"
+                                style="font-size:0.8rem;color:var(--accent);text-decoration:none;font-weight:600;">Forgot
+                                Password?</a>
+                        </div>
+                        <button class="btn btn-primary"
+                            style="width:100%;justify-content:center;padding:15px;font-size:1rem;border-radius:12px;background:linear-gradient(135deg,var(--accent),var(--accent2));border:none;"
+                            onclick="doLogin()">Sign In &nbsp;→</button>
+
+
+                    </div>
+
+                    <!-- Admin -->
+                    <div id="adminForm" class="hidden">
+                        <div style="text-align:center;margin-bottom:24px;">
+                            <div style="font-size:2.5rem;margin-bottom:8px;">🔐</div>
+                            <h3 style="color:var(--text);">Administrator</h3>
+                            <p style="font-size:0.8rem;color:var(--text3);margin-top:4px;">Authorized Personnel Only</p>
+                        </div>
+                        <div class="form-group">
+                            <label style="color:var(--text2);font-weight:500;">Admin Email</label>
+                            <div style="position:relative;">
+                                <span
+                                    style="position:absolute;left:14px;top:50%;transform:translateY(-50%);opacity:0.6;">✉️</span>
+                                <input type="email" id="adminEmail" placeholder=""
+                                    style="background:var(--bg2);border:1px solid var(--border);color:var(--text);padding-left:42px;border-radius:12px;">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label style="color:var(--text2);font-weight:500;">Secure Password</label>
+                            <div style="position:relative;">
+                                <span
+                                    style="position:absolute;left:14px;top:50%;transform:translateY(-50%);opacity:0.6;">🔑</span>
+                                <input type="password" id="adminPass" placeholder=""
+                                    style="background:var(--bg2);border:1px solid var(--border);color:var(--text);padding-left:42px;border-radius:12px;">
+                            </div>
+                        </div>
+                        <button class="btn btn-primary"
+                            style="width:100%;justify-content:center;padding:15px;font-size:1rem;background:linear-gradient(135deg,var(--purple),#5b21b6);border:none;border-radius:12px;margin-top:10px;"
+                            onclick="doAdminLogin()">Admin Login &nbsp;→</button>
+                    </div>
+
+                    <!-- Register -->
+                    <div id="registerForm" class="hidden">
+                        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+                            <div class="form-group"><label style="color:var(--text2);font-weight:500;">First
+                                    Name</label><input type="text" id="regFirst" placeholder="John"
+                                    style="background:var(--bg2);border:1px solid var(--border);color:var(--text);border-radius:12px;">
+                            </div>
+                            <div class="form-group"><label style="color:var(--text2);font-weight:500;">Last
+                                    Name</label><input type="text" id="regLast" placeholder="Doe"
+                                    style="background:var(--bg2);border:1px solid var(--border);color:var(--text);border-radius:12px;">
+                            </div>
+                        </div>
+                        <div class="form-group"><label style="color:var(--text2);font-weight:500;">Roll
+                                Number</label><input type="text" id="regRoll" placeholder="21L31A0501"
+                                style="background:var(--bg2);border:1px solid var(--border);color:var(--text);border-radius:12px;">
+                        </div>
+                        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
+                            <div class="form-group"><label
+                                    style="color:var(--text2);font-weight:500;">Email</label><input type="email"
+                                    id="regEmail" placeholder="john@vignan.ac.in"
+                                    style="background:var(--bg2);border:1px solid var(--border);color:var(--text);border-radius:12px;">
+                            </div>
+                            <div class="form-group"><label
+                                    style="color:var(--text2);font-weight:500;">Phone</label><input type="tel"
+                                    id="regPhone" placeholder="9876543210"
+                                    style="background:var(--bg2);border:1px solid var(--border);color:var(--text);border-radius:12px;">
+                            </div>
+                        </div>
+                        <div class="form-group"><label
+                                style="color:var(--text2);font-weight:500;">Password</label><input type="password"
+                                id="regPass" placeholder="••••••••"
+                                style="background:var(--bg2);border:1px solid var(--border);color:var(--text);border-radius:12px;">
+                        </div>
+                        <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+                            <div class="form-group"><label
+                                    style="color:var(--text2);font-weight:500;">Year</label><select id="regYear"
+                                    style="background:var(--bg2);border:1px solid var(--border);color:var(--text);border-radius:12px;">
+                                    <option>1st Year</option>
+                                    <option>2nd Year</option>
+                                    <option>3rd Year</option>
+                                    <option>4th Year</option>
+                                </select></div>
+                            <div class="form-group"><label
+                                    style="color:var(--text2);font-weight:500;">Branch</label><select id="regBranch"
+                                    style="background:var(--bg2);border:1px solid var(--border);color:var(--text);border-radius:12px;">
+                                    <option>CSE</option>
+                                    <option>ECE</option>
+                                    <option>IT</option>
+                                    <option>AIDS</option>
+                                </select></div>
+                        </div>
+                        <button class="btn btn-primary"
+                            style="width:100%;justify-content:center;padding:15px;font-size:1rem;border-radius:12px;background:linear-gradient(135deg,var(--accent3),#059669);color:#fff;border:none;margin-top:10px;"
+                            onclick="doRegister()">Create Account &nbsp;→</button>
+                    </div>
+                </div>
+
+                <!-- Premium Footer -->
+                <div
+                    style="margin-top:auto; padding-top:20px; font-size:0.85rem; color:var(--text3); display:flex; justify-content:space-between; align-items:center;">
+                    <div>© 2026 Vignan University. All rights reserved.</div>
+                    <div style="display:flex; gap:16px;">
+                        <a href="#" style="color:var(--text2); text-decoration:none; transition:color 0.2s;"
+                            onmouseover="this.style.color='var(--accent)'"
+                            onmouseout="this.style.color='var(--text2)'">Terms</a>
+                        <a href="#" style="color:var(--text2); text-decoration:none; transition:color 0.2s;"
+                            onmouseover="this.style.color='var(--accent)'"
+                            onmouseout="this.style.color='var(--text2)'">Privacy</a>
+                        <a href="#" style="color:var(--text2); text-decoration:none; transition:color 0.2s;"
+                            onmouseover="this.style.color='var(--accent)'"
+                            onmouseout="this.style.color='var(--text2)'">Support</a>
+                    </div>
+                </div>
+            </div>
+            <div class="auth-right"
+                style="background:url('assets/img.jpeg');background-size:cover;background-position:center;position:relative;">
+                <div
+                    style="position:absolute;inset:0;background:linear-gradient(135deg,rgba(10,10,15,0.95),rgba(10,10,15,0.5));">
+                </div>
+                <div
+                    style="position:absolute;bottom:60px;right:60px;max-width:500px;text-align:right;animation:slideRight .6s ease forwards;">
+                    <div style="display:flex;justify-content:flex-end;">
+                        <div class="pill pill-green" style="margin-bottom:20px;border:1px solid rgba(34,197,94,0.3);">
+                            <span class="live-dot"></span> &nbsp;Smart Canteen System</div>
+                    </div>
+                    <h2
+                        style="font-family:var(--font-head);font-size:3.5rem;font-weight:800;line-height:1.1;margin-bottom:20px;color:#fff;">
+                        Skip the Line,<br><span style="color:var(--accent);">Pre-Order Your</span><br>Meal Smart.</h2>
+                    <p style="color:var(--text2);font-size:1.1rem;line-height:1.6;">Track your queue in real-time and
+                        collect when ready.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- HOME -->
+    <div class="page" id="page-home">
+        <div class="hero">
+            <div class="hero-inner">
+                <div>
+                    <div class="pill pill-green" style="margin-bottom:20px;"><span class="live-dot"></span> &nbsp;Live
+                        Queue Active</div>
+                    <h1>Skip the Line,<br><span class="orange">Pre-Order</span> Your<br><span class="green">Meal</span>
+                        Smart</h1>
+                    <p>Track your queue in real-time and collect when ready. No waiting, no chaos.</p>
+                    <div class="hero-btns">
+                        <button class="btn btn-primary" onclick="showPage('menu')">Browse Menu</button>
+                        <button class="btn btn-outline" onclick="showPage('orders')">Track Orders</button>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <div class="container">
+            <h2 class="section-title" style="margin-bottom:8px;">🔥 Popular Items</h2>
+            <p class="section-sub">Most ordered by students today</p>
+            <div class="menu-grid" id="popularGrid"></div>
+        </div>
+    </div>
+
+    <!-- MENU -->
+    <div class="page" id="page-menu">
+        <div class="container">
+            <!-- Search Bar -->
+            <div class="search-bar-wrap">
+                <div class="search-bar">
+                    <span class="search-icon">🔍</span>
+                    <input type="text" id="menuSearch" placeholder="Search for dishes, e.g. Biryani, Dosa, Burger..."
+                        oninput="filterMenu()">
+                    <button class="search-clear" id="searchClear" onclick="clearSearch()" title="Clear">✕</button>
+                </div>
+            </div>
+            <div class="menu-filters" id="menuFilters"></div>
+            <!-- Veg / Non-Veg toggle -->
+            <div id="typeFilters" style="display:flex;gap:8px;margin-bottom:16px;align-items:center;">
+                <!-- rendered by JS -->
+            </div>
+            <div id="menuResultCount" class="section-sub" style="margin-bottom:16px;"></div>
+            <div class="menu-grid" id="menuGrid"></div>
+        </div>
+    </div>
+
+    <!-- ORDERS -->
+    <div class="page" id="page-orders">
+        <div class="container">
+            <h2 class="section-title">📦 Your Orders</h2>
+            <div class="tab-nav">
+                <div class="tab-item active" id="tabActive" onclick="switchOrderTab('active', this)">Active</div>
+                <div class="tab-item" id="tabHistory" onclick="switchOrderTab('history', this)">History</div>
+            </div>
+            <div id="ordersActive"></div>
+            <div id="ordersHistory" class="hidden"></div>
+        </div>
+    </div>
+
+    <!-- PROFILE -->
+    <div class="page" id="page-profile">
+        <div class="container">
+            <div class="profile-header" id="profileHeader">
+                <div class="avatar" id="profileAvatar">U</div>
+                <div>
+                    <div style="font-family:var(--font-head);font-size:1.4rem;font-weight:700;" id="profileName">User
+                    </div>
+                    <div style="color:var(--text2);font-size:0.85rem;margin-top:4px;" id="profileEmail"></div>
+                    <div style="color:var(--text3);font-size:0.8rem;margin-top:2px;" id="profileDetails"></div>
+                </div>
+                <div style="margin-left:auto;text-align:right;">
+                    <div style="font-size:0.75rem;color:var(--text2);">Total Spent</div>
+                    <div style="font-family:var(--font-head);font-size:1.5rem;font-weight:700;color:var(--accent);"
+                        id="profileSpent">₹0</div>
+                </div>
+            </div>
+            <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;margin-bottom:24px;">
+                <div class="card" style="text-align:center;">
+                    <div style="font-size:2rem;font-weight:800;font-family:var(--font-head);" id="profileOrders">0</div>
+                    <div style="font-size:0.78rem;color:var(--text2);margin-top:4px;">Total Orders</div>
+                </div>
+                <div class="card" style="text-align:center;">
+                    <div style="font-size:2rem;font-weight:800;font-family:var(--font-head);color:var(--warn);"
+                        id="profilePoints">0</div>
+                    <div style="font-size:0.78rem;color:var(--text2);margin-top:4px;">Loyalty Points</div>
+                </div>
+                <div class="card" style="text-align:center;">
+                    <div style="font-size:2rem;font-weight:800;font-family:var(--font-head);color:var(--accent3);">⭐
+                    </div>
+                    <div style="font-size:0.78rem;color:var(--text2);margin-top:4px;">Premium Member</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ADMIN DASHBOARD -->
+    <div class="page" id="page-admin">
+        <div style="display:flex;min-height:100vh;">
+            <!-- Sidebar -->
+            <div
+                style="width:220px;background:var(--bg2);border-right:1px solid var(--border);padding:24px 0;flex-shrink:0;">
+                <div style="padding:0 20px 24px;font-family:var(--font-head);font-weight:700;color:var(--accent);">⚙️
+                    Admin</div>
+                <div class="admin-nav-item active" onclick="showAdminSection('orders',this)">📦 Live Orders</div>
+                <div class="admin-nav-item" onclick="showAdminSection('dashboard',this)">📊 Dashboard</div>
+                <div class="admin-nav-item" onclick="showAdminSection('menu',this)">🍽️ Menu Manager</div>
+                <div class="admin-nav-item" onclick="showAdminSection('payments',this)">💳 Payments</div>
+                <div class="admin-nav-item" onclick="showAdminSection('analytics',this)">📈 Analytics</div>
+            </div>
+            <!-- Content -->
+            <div style="flex:1;padding:32px;overflow-y:auto;background:var(--bg);">
+                <div id="admin-orders"></div>
+                <div id="admin-dashboard" class="hidden"></div>
+                <div id="admin-menu" class="hidden"></div>
+                <div id="admin-payments" class="hidden"></div>
+                <div id="admin-analytics" class="hidden"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL -->
+    <div class="modal-overlay" id="modalOverlay" onclick="closeModalOutside(event)">
+        <div class="modal" id="modalBox">
+            <button class="close-btn" onclick="closeModal()">×</button>
+            <div id="modalBody"></div>
+        </div>
+    </div>
+
+    <!-- CART -->
+    <div class="cart-overlay" id="cartOverlay" onclick="toggleCart()"></div>
+    <div class="cart-sidebar" id="cartSidebar">
+        <div class="cart-header">
+            <h3>🛒 Your Cart</h3>
+            <button class="close-btn" onclick="toggleCart()">×</button>
+        </div>
+        <div class="cart-body" id="cartBody"></div>
+        <div class="cart-footer" id="cartFooter" style="display:none;">
+            <div id="cartTotals"></div>
+
+            <!-- Order Type Toggle -->
+            <div style="margin-top:16px;margin-bottom:12px;">
+                <label
+                    style="display:block;font-size:0.78rem;font-weight:600;color:var(--text2);margin-bottom:8px;">Order
+                    Type</label>
+                <div style="display:flex;background:var(--bg3);border-radius:10px;padding:3px;gap:2px;">
+                    <button id="orderTypeNow" onclick="setOrderType('now')"
+                        style="flex:1;padding:9px;border:none;border-radius:8px;cursor:pointer;font-size:0.82rem;font-weight:600;font-family:var(--font-body);background:var(--accent);color:#fff;transition:all .2s;">
+                        ⚡ Order Now
+                    </button>
+                    <button id="orderTypeSchedule" onclick="setOrderType('schedule')"
+                        style="flex:1;padding:9px;border:none;border-radius:8px;cursor:pointer;font-size:0.82rem;font-weight:600;font-family:var(--font-body);background:transparent;color:var(--text2);transition:all .2s;">
+                        🕐 Schedule
+                    </button>
+                </div>
+            </div>
+
+            <!-- Schedule Picker (hidden by default) -->
+            <div id="schedulePicker"
+                style="display:none;background:var(--bg3);border:1px solid var(--border);border-radius:10px;padding:14px;margin-bottom:12px;">
+                <div style="font-size:0.78rem;font-weight:600;color:var(--accent);margin-bottom:10px;">📅 Pick Pickup
+                    Time</div>
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+                    <div>
+                        <label
+                            style="font-size:0.72rem;color:var(--text2);display:block;margin-bottom:4px;">Date</label>
+                        <input type="date" id="scheduleDate"
+                            style="width:100%;background:var(--bg2);border:1px solid var(--border);color:var(--text);padding:8px 10px;border-radius:8px;font-family:var(--font-body);font-size:0.82rem;outline:none;">
+                    </div>
+                    <div>
+                        <label
+                            style="font-size:0.72rem;color:var(--text2);display:block;margin-bottom:4px;">Time</label>
+                        <input type="time" id="scheduleTime"
+                            style="width:100%;background:var(--bg2);border:1px solid var(--border);color:var(--text);padding:8px 10px;border-radius:8px;font-family:var(--font-body);font-size:0.82rem;outline:none;">
+                    </div>
+                </div>
+                <div id="schedulePreview" style="margin-top:10px;font-size:0.75rem;color:var(--accent3);"></div>
+            </div>
+
+            <!-- Payment Method -->
+            <div class="form-group">
+                <label>Payment Method</label>
+                <select id="paymentMethod"
+                    style="background:var(--bg3);border:1px solid var(--border);color:var(--text);padding:10px;border-radius:8px;width:100%;font-family:var(--font-body);">
+                    <option value="cash">💵 Cash at Counter</option>
+                    <option value="upi">📱 UPI / Razorpay</option>
+                    <option value="card">💳 Card</option>
+                </select>
+            </div>
+
+            <button class="btn btn-primary" id="placeOrderBtn"
+                style="width:100%;justify-content:center;margin-top:12px;padding:14px;font-size:1rem;"
+                onclick="placeOrder()">⚡ Place Order →</button>
+        </div>
+    </div>
+
+
+    <!-- AI Chatbot -->
+    <div class="chatbot-trigger hidden" id="chatTrigger" onclick="window.toggleChat()">
+        <span class="chat-icon">🤖</span>
+        <span class="chat-pulse"></span>
+    </div>
+
+    <div class="chat-window hidden" id="chatWindow">
+        <div class="chat-header">
+            <div style="display:flex;align-items:center;gap:10px;">
+                <div class="bot-avatar">⚡</div>
+                <div>
+                    <div style="font-weight:700;font-size:0.9rem;color:#fff;">DineBot AI</div>
+                    <div style="font-size:0.7rem;color:var(--success);display:flex;align-items:center;gap:4px;">
+                        <span class="live-dot" style="width:6px;height:6px;"></span> Online
+                    </div>
+                </div>
+            </div>
+            <div style="margin-left:auto;display:flex;gap:8px;align-items:center;">
+                <button onclick="window.clearChat()" style="background:none;border:1px solid rgba(255,255,255,0.1);color:var(--text3);font-size:0.7rem;padding:4px 8px;border-radius:6px;cursor:pointer;">Clear</button>
+                <button class="close-btn" onclick="window.toggleChat()" style="color:var(--text3);font-size:1.5rem;padding:0;">×</button>
+            </div>
+        </div>
+        <div class="chat-body" id="chatBody">
+            <div class="msg bot-msg">👋 Namaste! I'm **DineBot**, your Vignan Canteen Assistant. <br><br>Since you're
+                new, I recommend starting with our **Popular Items** or telling me what you're in the mood for!</div>
+        </div>
+        <div class="chat-footer">
+            <input type="text" id="chatInput" placeholder="Ask e.g. 'What is popular?'"
+                onkeypress="window.handleChatKey(event)">
+            <button onclick="window.sendChatMessage()">🚀</button>
+        </div>
+    </div>
+
+    <script type="module" src="js/app.js"></script>
+
+</body>
+
+</html>
