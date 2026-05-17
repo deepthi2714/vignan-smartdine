@@ -4,7 +4,7 @@
  * Falls back to BroadcastChannel if server is not reachable.
  */
 
-const SERVER_URL = 'http://localhost:3001';
+const SERVER_URL = '';
 let socket = null;
 let onUpdateCallback = null;
 let usingFallback = false;
