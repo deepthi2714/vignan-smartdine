@@ -1,8 +1,8 @@
-import { MENU_DATA } from './menuData.js';
-import * as auth from './auth.js';
-import * as admin from './admin.js';
-import { initRealtime, saveOrders, loadOrders, placeOrderAPI, updateOrderStatusAPI, fetchAllOrdersAPI } from './realtime.js';
-import { initNotifications, addNotification, markAllRead, renderNotifDropdown } from './notifications.js';
+import { MENU_DATA } from './menuData.js?v=2';
+import * as auth from './auth.js?v=2';
+import * as admin from './admin.js?v=2';
+import { initRealtime, saveOrders, loadOrders, placeOrderAPI, updateOrderStatusAPI, fetchAllOrdersAPI } from './realtime.js?v=2';
+import { initNotifications, addNotification, markAllRead, renderNotifDropdown } from './notifications.js?v=2';
 
 export let state = {
     user: null,
