@@ -733,9 +733,15 @@ function showOrderConfirmation(order) {
 export function loadOrders_page() {
     const activeEl    = document.getElementById('ordersActive');
     const historyEl   = document.getElementById('ordersHistory');
-    const scheduled   = state.orders.filter(o => o.status === 'scheduled');
-    const active      = state.orders.filter(o => !['completed','rejected','scheduled'].includes(o.status));
-    const history     = state.orders.filter(o => ['completed','rejected'].includes(o.status));
+    // Filter so students only see their own orders
+    let myOrders = state.orders;
+    if (state.user && state.user.role !== 'admin') {
+        myOrders = state.orders.filter(o => o.userEmail === state.user.email);
+    }
+
+    const scheduled   = myOrders.filter(o => o.status === 'scheduled');
+    const active      = myOrders.filter(o => !['completed','rejected','scheduled'].includes(o.status));
+    const history     = myOrders.filter(o => ['completed','rejected'].includes(o.status));
 
     if (activeEl) {
         const allActive = [...scheduled, ...active];
